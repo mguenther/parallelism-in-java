@@ -15,7 +15,7 @@ public class Schedulers {
 
     private static final DefaultTaskScheduler SCHEDULER = new DefaultTaskScheduler();
 
-    private static <T> Future<T> task(final Supplier<T> body) {
+    private static <T> ForkJoinTask<T> task(final Supplier<T> body) {
         return SCHEDULER.schedule(body);
     }
 
@@ -28,10 +28,10 @@ public class Schedulers {
             final Supplier<B> taskB,
             final Supplier<C> taskC,
             final Supplier<D> taskD) throws ExecutionException, InterruptedException {
-        final Future<A> ta = task(taskA);
-        final Future<B> tb = task(taskB);
-        final Future<C> tc = task(taskC);
-        final Future<D> td = task(taskD);
-        return new Tuple4<>(ta.get(), tb.get(), tc.get(), td.get());
+        final ForkJoinTask<A> ta = task(taskA);
+        final ForkJoinTask<B> tb = task(taskB);
+        final ForkJoinTask<C> tc = task(taskC);
+        final ForkJoinTask<D> td = task(taskD);
+        return new Tuple4<>(ta.join(), tb.join(), tc.join(), td.get());
     }
 }
