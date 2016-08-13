@@ -7,13 +7,13 @@ import java.util.concurrent.ExecutionException;
 
 import static com.mgu.parallel.Schedulers.parallel;
 
-public class PiEstimation {
+public class PiEstimator {
 
-    public double computeSequentially(final int iterations) {
+    public double estimateSequential(final int iterations) {
         return 4.0 * monteCarloCount(iterations) / iterations;
     }
 
-    public double computeParallel(final int iterations) throws ExecutionException, InterruptedException {
+    public double estimateParallel(final int iterations) throws ExecutionException, InterruptedException {
         final Tuple4<Integer, Integer, Integer, Integer> result = parallel(
                 () -> monteCarloCount(iterations/4),
                 () -> monteCarloCount(iterations/4),
@@ -32,19 +32,5 @@ public class PiEstimation {
             if (x*x + y*y < 1) hits++;
         }
         return hits;
-    }
-
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        final PiEstimation piMonteCarlo = new PiEstimation();
-        long start = System.nanoTime();
-        final double piSeq = piMonteCarlo.computeSequentially(50000000);
-        long end = System.nanoTime();
-        long duration = (end - start) / 1000000;
-        System.out.println("Computed PI (" + piSeq + ") sequentially in " + duration + " ms.");
-        start = System.nanoTime();
-        final double piPar = piMonteCarlo.computeParallel(50000000);
-        end = System.nanoTime();
-        duration = (end - start) / 1000000;
-        System.out.println("Computed PI (" + piPar + ") parallel in " + duration + " ms.");
     }
 }
