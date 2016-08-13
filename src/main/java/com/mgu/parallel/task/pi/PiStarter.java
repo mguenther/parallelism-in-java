@@ -1,4 +1,4 @@
-package com.mgu.parallel.pi;
+package com.mgu.parallel.task.pi;
 
 import org.openjdk.jmh.Main;
 
