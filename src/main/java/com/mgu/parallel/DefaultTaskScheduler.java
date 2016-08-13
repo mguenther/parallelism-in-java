@@ -6,7 +6,7 @@ import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Supplier;
 
-public class DefaultTaskScheduler extends AbstractTaskScheduler {
+public class DefaultTaskScheduler implements TaskScheduler {
 
     private final ForkJoinPool forkJoinPool;
 
@@ -16,6 +16,12 @@ public class DefaultTaskScheduler extends AbstractTaskScheduler {
 
     public DefaultTaskScheduler(final ForkJoinPool forkJoinPool) {
         this.forkJoinPool = forkJoinPool;
+    }
+
+    @Override
+    public <A, B> Tuple2<A, B> parallel(final Supplier<A> taskA, final Supplier<B> taskB) {
+        final ForkJoinTask<B> right = schedule(taskB);
+        return new Tuple2<>(taskA.get(), right.join());
     }
 
     @Override
