@@ -3,6 +3,7 @@ package com.mgu.parallel;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Supplier;
 
@@ -25,12 +26,38 @@ public class DefaultTaskScheduler implements TaskScheduler {
     }
 
     @Override
+    public void parallel(final Runnable taskA, final Runnable taskB) {
+        final ForkJoinTask<Void> right = schedule(taskB);
+        taskA.run();
+        right.join();
+    }
+
+    @Override
     public <T> ForkJoinTask<T> schedule(final Supplier<T> body) {
 
         final RecursiveTask<T> task = new RecursiveTask<T>() {
             @Override
             protected T compute() {
                 return body.get();
+            }
+        };
+
+        if (isForkJoinWorkerThread()) {
+            task.fork();
+        } else {
+            forkJoinPool.execute(task);
+        }
+
+        return task;
+    }
+
+    @Override
+    public ForkJoinTask<Void> schedule(final Runnable body) {
+
+        final RecursiveAction task = new RecursiveAction() {
+            @Override
+            protected void compute() {
+                body.run();
             }
         };
 

@@ -13,5 +13,9 @@ public interface TaskScheduler {
 
     <T> ForkJoinTask<T> schedule(Supplier<T> body);
 
+    ForkJoinTask<Void> schedule(Runnable body);
+
     <A, B> Tuple2<A, B> parallel(Supplier<A> taskA, Supplier<B> taskB);
+
+    void parallel(Runnable taskA, Runnable taskB);
 }
