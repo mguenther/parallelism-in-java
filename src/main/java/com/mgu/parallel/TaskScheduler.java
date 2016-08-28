@@ -1,6 +1,7 @@
 package com.mgu.parallel;
 
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 /**
@@ -11,7 +12,7 @@ import java.util.function.Supplier;
  */
 public interface TaskScheduler {
     /**
-     * Schedules the execution of the given {@code Supplier}. Yields a {@code ForkJoinTask} of parametric
+     * Schedules the execution of the given {@code Supplier}. Yields a {@code Future} of parametric
      * type {@code T}.
      *
      * @param body
@@ -20,13 +21,13 @@ public interface TaskScheduler {
      * @param <T>
      *      type of the result
      * @return
-     *      instance of {@code ForkJoinTask} that will eventually conclude with a result of type
+     *      instance of {@code Future} that will eventually conclude with a result of type
      *      {@code T}
      */
-    <T> ForkJoinTask<T> schedule(Supplier<T> body);
+    <T> Future<T> schedule(Supplier<T> body);
 
     /**
-     * Schedules the execution of the given {@code Runnable}. Yields a {@code ForkJoinTask} of parametric
+     * Schedules the execution of the given {@code Runnable}. Yields a {@code Future} of parametric
      * type {@code Void}. This variant of {@code schedule} should be used if the given {@code Runnable} closes
      * over its input data and the input data is the target as well.
      *
@@ -34,9 +35,9 @@ public interface TaskScheduler {
      *      a procedure that consumes no input arguments and returns no result either, scheduled for
      *      later execution
      * @return
-     *      instance of {@code ForkJoinTask} that will eventually conclude
+     *      instance of {@code Future} that will eventually conclude
      */
-    ForkJoinTask<Void> schedule(Runnable body);
+    Future<Void> schedule(Runnable body);
 
     /**
      * Executes both given {@code Supplier}s in parallel. Waits for termination of both and returns their

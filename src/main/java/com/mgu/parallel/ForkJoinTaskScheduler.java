@@ -7,15 +7,15 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Supplier;
 
-public class DefaultTaskScheduler implements TaskScheduler {
+public class ForkJoinTaskScheduler implements TaskScheduler {
 
     private final ForkJoinPool forkJoinPool;
 
-    public DefaultTaskScheduler() {
+    public ForkJoinTaskScheduler() {
         this(ForkJoinPool.commonPool());
     }
 
-    public DefaultTaskScheduler(final ForkJoinPool forkJoinPool) {
+    public ForkJoinTaskScheduler(final ForkJoinPool forkJoinPool) {
         this.forkJoinPool = forkJoinPool;
     }
 
