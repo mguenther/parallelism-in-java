@@ -9,6 +9,10 @@ import org.openjdk.jmh.annotations.State;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.mgu.parallel.task.countchange.CountChange.combinedThreshold;
+import static com.mgu.parallel.task.countchange.CountChange.moneyThreshold;
+import static com.mgu.parallel.task.countchange.CountChange.totalCoinsThreshold;
+
 @State
 public class CountChangeBenchmark {
 
@@ -33,7 +37,7 @@ public class CountChangeBenchmark {
     public void runCountChangeParallelMoneyHeuristic() {
         final int startingMoney = 250;
         final List<Integer> coins = List.of(1, 2, 5, 10, 20, 50);
-        countChange.parCountChange(startingMoney, coins, CountChange.moneyThreshold(startingMoney));
+        countChange.parCountChange(startingMoney, coins, moneyThreshold(startingMoney));
     }
 
     @GenerateMicroBenchmark
@@ -42,7 +46,7 @@ public class CountChangeBenchmark {
     public void runCountChangeParallelTotalCoinsHeuristic() {
         final int startingMoney = 250;
         final List<Integer> coins = List.of(1, 2, 5, 10, 20, 50);
-        countChange.parCountChange(startingMoney, coins, CountChange.totalCoinsThreshold(coins.size()));
+        countChange.parCountChange(startingMoney, coins, totalCoinsThreshold(coins.size()));
     }
 
     @GenerateMicroBenchmark
@@ -51,6 +55,6 @@ public class CountChangeBenchmark {
     public void runCountChangeParallelCombinedHeuristic() {
         final int startingMoney = 250;
         final List<Integer> coins = List.of(1, 2, 5, 10, 20, 50);
-        countChange.parCountChange(startingMoney, coins, CountChange.combinedThreshold(startingMoney, coins));
+        countChange.parCountChange(startingMoney, coins, combinedThreshold(startingMoney, coins));
     }
 }
