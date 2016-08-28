@@ -2,7 +2,6 @@ package com.mgu.parallel;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 
 /**
  * Provides some convenience methods to use the parallelization API of the {@link ForkJoinTaskScheduler}.
@@ -14,19 +13,19 @@ public class Schedulers {
 
     private static final TaskScheduler SCHEDULER = new ForkJoinTaskScheduler();
 
-    private static <T> Future<T> task(final Supplier<T> body) {
+    private static <T> Future<T> task(final Task<T> body) {
         return SCHEDULER.schedule(body);
     }
 
-    public static <A, B> Tuple2<A, B> parallel(final Supplier<A> taskA, final Supplier<B> taskB) {
+    public static <A, B> Tuple2<A, B> parallel(final Task<A> taskA, final Task<B> taskB) {
         return SCHEDULER.parallel(taskA, taskB);
     }
 
     public static <A, B, C, D> Tuple4<A, B, C, D> parallel(
-            final Supplier<A> taskA,
-            final Supplier<B> taskB,
-            final Supplier<C> taskC,
-            final Supplier<D> taskD) throws ExecutionException, InterruptedException {
+            final Task<A> taskA,
+            final Task<B> taskB,
+            final Task<C> taskC,
+            final Task<D> taskD) throws ExecutionException, InterruptedException {
         final Future<A> ta = task(taskA);
         final Future<B> tb = task(taskB);
         final Future<C> tc = task(taskC);

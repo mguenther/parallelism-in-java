@@ -5,8 +5,12 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
-import java.util.function.Supplier;
 
+/**
+ * Implementation of {@link TaskScheduler} that uses the Fork-Join framework.
+ *
+ * @author Markus Günther (markus.guenther@gmail.com)
+ */
 public class ForkJoinTaskScheduler implements TaskScheduler {
 
     private final ForkJoinPool forkJoinPool;
@@ -20,25 +24,25 @@ public class ForkJoinTaskScheduler implements TaskScheduler {
     }
 
     @Override
-    public <A, B> Tuple2<A, B> parallel(final Supplier<A> taskA, final Supplier<B> taskB) {
+    public <A, B> Tuple2<A, B> parallel(final Task<A> taskA, final Task<B> taskB) {
         final ForkJoinTask<B> right = schedule(taskB);
-        return new Tuple2<>(taskA.get(), right.join());
+        return new Tuple2<>(taskA.compute(), right.join());
     }
 
     @Override
-    public void parallel(final Runnable taskA, final Runnable taskB) {
+    public void parallel(final UntypedTask taskA, final UntypedTask taskB) {
         final ForkJoinTask<Void> right = schedule(taskB);
-        taskA.run();
+        taskA.compute();
         right.join();
     }
 
     @Override
-    public <T> ForkJoinTask<T> schedule(final Supplier<T> body) {
+    public <T> ForkJoinTask<T> schedule(final Task<T> body) {
 
         final RecursiveTask<T> task = new RecursiveTask<T>() {
             @Override
             protected T compute() {
-                return body.get();
+                return body.compute();
             }
         };
 
@@ -52,12 +56,12 @@ public class ForkJoinTaskScheduler implements TaskScheduler {
     }
 
     @Override
-    public ForkJoinTask<Void> schedule(final Runnable body) {
+    public ForkJoinTask<Void> schedule(final UntypedTask body) {
 
         final RecursiveAction task = new RecursiveAction() {
             @Override
             protected void compute() {
-                body.run();
+                body.compute();
             }
         };
 

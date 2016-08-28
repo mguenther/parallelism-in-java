@@ -1,8 +1,6 @@
 package com.mgu.parallel;
 
-import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 
 /**
  * Provides the means to schedule single tasks or multiple tasks in parallel. Implementing classes define the
@@ -12,7 +10,7 @@ import java.util.function.Supplier;
  */
 public interface TaskScheduler {
     /**
-     * Schedules the execution of the given {@code Supplier}. Yields a {@code Future} of parametric
+     * Schedules the execution of the given {@code Task}. Yields a {@code Future} of parametric
      * type {@code T}.
      *
      * @param body
@@ -24,11 +22,11 @@ public interface TaskScheduler {
      *      instance of {@code Future} that will eventually conclude with a result of type
      *      {@code T}
      */
-    <T> Future<T> schedule(Supplier<T> body);
+    <T> Future<T> schedule(Task<T> body);
 
     /**
-     * Schedules the execution of the given {@code Runnable}. Yields a {@code Future} of parametric
-     * type {@code Void}. This variant of {@code schedule} should be used if the given {@code Runnable} closes
+     * Schedules the execution of the given {@code UntypedTask}. Yields a {@code Future} of parametric
+     * type {@code Void}. This variant of {@code schedule} should be used if the given {@code UntypedTask} closes
      * over its input data and the input data is the target as well.
      *
      * @param body
@@ -37,10 +35,10 @@ public interface TaskScheduler {
      * @return
      *      instance of {@code Future} that will eventually conclude
      */
-    Future<Void> schedule(Runnable body);
+    Future<Void> schedule(UntypedTask body);
 
     /**
-     * Executes both given {@code Supplier}s in parallel. Waits for termination of both and returns their
+     * Executes both given {@code Task}s in parallel. Waits for termination of both and returns their
      * result represented using the tuple type {@code Tuple2}. The result of {@code taskA} is represented
      * as {@code Tuple2#a} while the result of {@code taskB} is represented as {@code Tuple2#b}.
      *
@@ -57,11 +55,11 @@ public interface TaskScheduler {
      * @return
      *      instance of {@code Tuple2} which yields the results of the parallel computation
      */
-    <A, B> Tuple2<A, B> parallel(Supplier<A> taskA, Supplier<B> taskB);
+    <A, B> Tuple2<A, B> parallel(Task<A> taskA, Task<B> taskB);
 
     /**
-     * Executes both given {@code Runnable}s in parallel and awaits their termination. This variant of
-     * {@code parallel} should be used if the given {@code Runnable} closes over its input data and the
+     * Executes both given {@code UntypedTask}s in parallel and awaits their termination. This variant of
+     * {@code parallel} should be used if the given {@code UntypedTask} closes over its input data and the
      * input data is the target as well.
      *
      * @param taskA
@@ -71,5 +69,5 @@ public interface TaskScheduler {
      *      a procedure that consumes no input arguments and returns no result either, scheduled for
      *      parallel execution alongside {@code taskA}
      */
-    void parallel(Runnable taskA, Runnable taskB);
+    void parallel(UntypedTask taskA, UntypedTask taskB);
 }
