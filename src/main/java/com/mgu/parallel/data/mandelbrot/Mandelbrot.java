@@ -4,8 +4,10 @@ import javaslang.collection.Array;
 import javaslang.collection.Seq;
 import javaslang.concurrent.Future;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class Mandelbrot {
 
@@ -35,18 +37,25 @@ public class Mandelbrot {
         this.executorService = executorService;
     }
 
-    public Future<Seq<Integer>> computeParallel(final Array<Integer> withIndicesInCells) {
-        return Future.traverse(executorService, withIndicesInCells, this::singleComputation);
+    public Future<Seq<Integer>> parWithJavaslang(final Array<Integer> withIndicesInCells) {
+        return Future.traverse(executorService, withIndicesInCells, index -> Future.of(() -> singleComputation(index)));
     }
 
-    private Future<Integer> singleComputation(final Integer index) {
+    private Integer singleComputation(final Integer index) {
         final int x = index % width;
         final int y = index / width;
 
         final double xc = XR + (XI - XR) * x / width;
         final double yc = YR + (YI - YR) * y / height;
 
-        return Future.of(() -> mandelbrot(xc, yc));
+        return mandelbrot(xc, yc);
+    }
+
+    public List<Integer> parWithStreams(final List<Integer> withIndicesInCells) {
+        return withIndicesInCells.stream()
+                .parallel()
+                .map(this::singleComputation)
+                .collect(Collectors.toList());
     }
 
     private Integer mandelbrot(final double xc, final double yc) {
